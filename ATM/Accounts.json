@@ -1,0 +1,49 @@
+[
+  {
+    "id": 0,
+    "pin": 1111,
+    "name": "Mario",
+    "wallet": 4500,
+    "Transactions": [
+      {
+        "FromID": 0,
+        "ToID": 0,
+        "TransactionType": "Deposit",
+        "TransactionAmount": 5000
+      },
+      {
+        "FromID": 0,
+        "ToID": 0,
+        "TransactionType": "Withdraw",
+        "TransactionAmount": 500
+      },
+      {
+        "FromID": 0,
+        "ToID": 1,
+        "TransactionType": "Transfer",
+        "TransactionAmount": 500
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "pin": 1111,
+    "name": "Maria",
+    "wallet": 0,
+    "Transactions": [
+      {
+        "FromID": 0,
+        "ToID": 1,
+        "TransactionType": "Transfer",
+        "TransactionAmount": 500
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "pin": 1111,
+    "name": "Renata",
+    "wallet": 0,
+    "Transactions": null
+  }
+]
