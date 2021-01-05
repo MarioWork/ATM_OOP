@@ -20,26 +20,41 @@ namespace ATM
             //Get the accounts from the Json File
             RetrieveAccountsFileToList();
 
-            Console.WriteLine("Choose an action (Sign In: 0 or Sign Up: 1)");
-            ActionDecisionMethod(Convert.ToInt32(Console.ReadLine()));
 
+            LoginMenu();
             int Action = -1;
             if (AccountNumber > -1 && LoggedIn)
             {
                 Console.WriteLine($"\nWelcome {AccountsList[AccountNumber].name}:");
 
-                while (Action != 7)
+                while (Action != 8)
                 {
-                    Console.WriteLine($"\nChoose an action (Balance: 2 / Deposit: 3 / Withdraw: 4 / Transfer: 5 / Transactions: 6 / Logout: 7)");
-                    Action = Convert.ToInt32(Console.ReadLine());
-                    if (Action != 0 && Action != 1)
+                    Console.WriteLine($"\nChoose an action (Balance: 2 / Deposit: 3 / Withdraw: 4 / Transfer: 5 / Transactions: 6 / Logout: 7 / Quit: 8)");
+                    string Actionstr = Console.ReadLine();
+
+                    if (int.TryParse(Actionstr, out Action))
                     {
-                        ActionDecisionMethod(Action);
-                    }else{
+                        if (Action != 0 && Action != 1 && Action != 8)
+                        {
+                            ActionDecisionMethod(Action);
+                        }
+                        else if (Action != 8)
+                        {
+                            Console.WriteLine("\nChoose the right action...");
+                        }
+                    }
+                    else
+                    {
                         Console.WriteLine("\nChoose the right action...");
                     }
                 }
             }
+        }
+
+        public static void LoginMenu()
+        {
+            Console.WriteLine("Choose an action (Sign In: 0 or Sign Up: 1)");
+            ActionDecisionMethod(Convert.ToInt32(Console.ReadLine()));
         }
 
 
@@ -107,58 +122,84 @@ namespace ATM
         //Function with the job to take decisions in the algorithm
         public static void ActionDecisionMethod(int Action)
         {
-            switch (Action)
+            if (Action > 1 && AccountNumber < 0 && !LoggedIn)
             {
-                case 0:
-                    SignIn();
-                    break;
-                case 1:
-                    SignUp();
-                    CreateAccountsFile();
-                    break;
-                case 2:
-                    CheckBalance();
-                    break;
-                case 3:
-                    Deposit();
-                    CreateAccountsFile();
-                    break;
-                case 4:
-                    Withdraw();
-                    CreateAccountsFile();
-                    break;
-                case 5:
-                    CreateNewTransaction();
-                    CreateAccountsFile();
-                    break;
-                case 6:
-                    CheckTransactions();
-                    break;
-                case 7:
-                    LoggedIn = false;
-                    break;
-                default:
-                    Console.WriteLine("Something went wrong...");
-                    break;
-            };
+                LoginMenu();
+            }
+            else
+            {
+                switch (Action)
+                {
+                    case 0:
+                        SignIn();
+                        break;
+                    case 1:
+                        SignUp();
+                        CreateAccountsFile();
+                        break;
+                    case 2:
+                        CheckBalance();
+                        break;
+                    case 3:
+                        Deposit();
+                        CreateAccountsFile();
+                        break;
+                    case 4:
+                        Withdraw();
+                        CreateAccountsFile();
+                        break;
+                    case 5:
+                        CreateNewTransaction();
+                        CreateAccountsFile();
+                        break;
+                    case 6:
+                        CheckTransactions();
+                        break;
+                    case 7:
+                        LoggedIn = false;
+                        AccountNumber = -1;
+                        LoginMenu();
+                        break;
+                    default:
+                        Console.WriteLine("Choose the right action...");
+                        break;
+                };
+            }
         }
 
         //Function with the job to SignIn
         public static void SignIn()
         {
             Console.WriteLine("Insert Account Number:");
-            AccountNumber = Convert.ToInt32(Console.ReadLine());
+            string AccountNumStr = Console.ReadLine();
             Console.WriteLine("Insert Account Pin:");
-            int AccountPin = Convert.ToInt32(Console.ReadLine());
+            string AccPinStr = Console.ReadLine();
 
-            if (AccountsList[AccountNumber].pin == AccountPin)
+            if (int.TryParse(AccountNumStr, out AccountNumber) && int.TryParse(AccPinStr, out int AccountPin))
             {
-                LoggedIn = true;
+                try
+                {
+                    if (AccountsList[AccountNumber].pin == AccountPin)
+                    {
+                        LoggedIn = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nThe Account Sign In is Incorrect.");
+                        LoginMenu();
+                        LoggedIn = false;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("\nAccount does not exist...");
+                    LoginMenu();
+                }
             }
             else
             {
-                Console.WriteLine("The Account Sign In is Incorrect.");
-                LoggedIn = false;
+                Console.WriteLine("\nInsert an appropriate Account Number and Pin...");
             }
         }
 
@@ -167,78 +208,111 @@ namespace ATM
         {
             Console.WriteLine("Insert your Name: ");
             string nameInput = Console.ReadLine();
-            Console.WriteLine("Choose a pin of 4 digits for your Account: ");
-            int pinInput = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Choose a pin of digits for your Account: ");
+            string pinInputStr = Console.ReadLine();
             int AccountNumber = AccountsList.Count;
 
-            AccountsList.Add(new AccountClass { id = AccountNumber, name = nameInput, pin = pinInput });
+            if (int.TryParse(pinInputStr, out int pinInput))
+            {
+                List<TransactionsClass> transactions = new List<TransactionsClass>();
+                AccountsList.Add(new AccountClass { id = AccountNumber, name = nameInput, pin = pinInput, Transactions = transactions });
 
-            Console.WriteLine($"\nWelcome {AccountsList[AccountNumber].name}:"
-             + $"\n Account Number: {AccountsList[AccountNumber].id}"
-             + $"\n Account Pin: {AccountsList[AccountNumber].pin}");
+                Console.WriteLine($"\nWelcome {AccountsList[AccountNumber].name}:"
+                 + $"\n Account Number: {AccountsList[AccountNumber].id}"
+                 + $"\n Account Pin: {AccountsList[AccountNumber].pin}");
+
+                LoginMenu();
+            }
+            else
+            {
+                Console.WriteLine("\nInsert a valid account pin with digits only...");
+            }
         }
 
         //Function that checks account balance of the current user
         public static void CheckBalance()
         {
-            if (AccountNumber > -1 && LoggedIn)
-            {
-                Console.WriteLine($"\nYour balance is: {AccountsList[AccountNumber].wallet} euros.");
-            }
+
+            Console.WriteLine($"\nYour balance is: {AccountsList[AccountNumber].wallet} euros.");
+
         }
 
 
         //Function that check the Transactions History
         public static void CheckTransactions()
         {
-            if (AccountNumber > -1 && LoggedIn)
+            if (LoggedIn)
             {
                 Console.WriteLine("\nYour Transactions:");
-                foreach (var item in AccountsList[AccountNumber].Transactions)
+                if (AccountsList[AccountNumber].Transactions.Count > 0)
                 {
-                    if (item.TransactionType.Equals("Transfer"))
+                    foreach (var item in AccountsList[AccountNumber].Transactions)
                     {
-                        if (item.FromID == AccountsList[AccountNumber].id)
+                        if (item.TransactionType.Equals("Transfer"))
                         {
-                            Console.WriteLine($" {item.TransactionType} -{item.TransactionAmount} euros to: {AccountsList[item.ToID].name}.");
+                            if (item.FromID == AccountsList[AccountNumber].id)
+                            {
+                                Console.WriteLine($" {item.TransactionType} -{item.TransactionAmount} euros to: {AccountsList[item.ToID].name}.");
+                            }
+                            else
+                            {
+                                Console.WriteLine($" {item.TransactionType} +{item.TransactionAmount} euros from: {AccountsList[item.FromID].name}.");
+                            }
                         }
-                        else
+                        else if (item.TransactionType.Equals("Deposit"))
                         {
-                            Console.WriteLine($" {item.TransactionType} +{item.TransactionAmount} euros from: {AccountsList[item.FromID].name}.");
+                            Console.WriteLine($" {item.TransactionType} +{item.TransactionAmount} euros.");
                         }
-                    }
-                    else if (item.TransactionType.Equals("Deposit"))
-                    {
-                        Console.WriteLine($" {item.TransactionType} +{item.TransactionAmount} euros.");
-                    }
-                    else if (item.TransactionType.Equals("Withdraw"))
-                    {
-                        Console.WriteLine($" {item.TransactionType} -{item.TransactionAmount} euros.");
+                        else if (item.TransactionType.Equals("Withdraw"))
+                        {
+                            Console.WriteLine($" {item.TransactionType} -{item.TransactionAmount} euros.");
+                        }
                     }
                 }
+                else
+                {
+                    Console.WriteLine(" No transactions...");
+                }
+
             }
         }
 
         //Function that takes care of the deposit
         public static void Deposit()
         {
-            Console.WriteLine("Insert the amount you would like to deposit:");
-            double Amount = Convert.ToDouble(Console.ReadLine());
-            AccountsList[AccountNumber].DepositMoney(Amount);
-            //Add a new transaction to the list
-            AccountsList[AccountNumber].Transactions.Add(new TransactionsClass { TransactionType = "Deposit", TransactionAmount = Amount });
-            Console.WriteLine($"Deposit of: {Amount} Succesful!");
+            Console.WriteLine("\nInsert the amount you would like to deposit:");
+            if (double.TryParse(Console.ReadLine(), out double Amount))
+            {
+                AccountsList[AccountNumber].DepositMoney(Amount);
+                //Add a new transaction to the list
+                AccountsList[AccountNumber].Transactions.Add(new TransactionsClass { TransactionType = "Deposit", TransactionAmount = Amount });
+                Console.WriteLine($"\nDeposit of: {Amount} Succesful!");
+            }
+            else
+            {
+                Console.WriteLine("\nInsert a valid amount.");
+                Deposit();
+            }
+
         }
 
 
         //Function that takes care of the withdraw 
         public static void Withdraw()
         {
-            Console.WriteLine("Insert the amount you would like to withdraw:");
-            double Amount = Convert.ToDouble(Console.ReadLine());
-            AccountsList[AccountNumber].WithdrawMoney(Amount);
-            AccountsList[AccountNumber].Transactions.Add(new TransactionsClass { TransactionType = "Withdraw", TransactionAmount = Amount });
-            Console.WriteLine($"Withdraw of: {Amount}  Succesful!");
+            Console.WriteLine("\nInsert the amount you would like to withdraw:");
+            if (double.TryParse(Console.ReadLine(), out double Amount))
+            {
+                AccountsList[AccountNumber].WithdrawMoney(Amount);
+                AccountsList[AccountNumber].Transactions.Add(new TransactionsClass { TransactionType = "Withdraw", TransactionAmount = Amount });
+                Console.WriteLine($"\nWithdraw of: {Amount}  Succesful!");
+            }
+            else
+            {
+                Console.WriteLine("\nInsert a valid amount.");
+                Withdraw();
+            }
+
         }
 
 
@@ -246,30 +320,37 @@ namespace ATM
         public static void CreateNewTransaction()
         {
             Console.WriteLine("\nInsert the account number you would like to transfer to:");
-            int AccNumTo = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Insert the amount:");
-            int amount = Convert.ToInt32(Console.ReadLine());
+            string accn = Console.ReadLine();
+            Console.WriteLine("\nInsert the amount:");
+            string amountStr = Console.ReadLine();
 
-
-            AccountsList[AccountNumber].Transactions.Add(new TransactionsClass
+            if (Int32.TryParse(accn, out int AccNumTo) && Int32.TryParse(amountStr, out int amount))
             {
-                FromID = AccountsList[AccountNumber].id,
-                ToID = AccNumTo,
-                TransactionType = "Transfer",
-                TransactionAmount = amount
-            });
+                AccountsList[AccountNumber].Transactions.Add(new TransactionsClass
+                {
+                    FromID = AccountsList[AccountNumber].id,
+                    ToID = AccNumTo,
+                    TransactionType = "Transfer",
+                    TransactionAmount = amount
+                });
 
 
-            AccountsList[AccNumTo].Transactions.Add(new TransactionsClass
+                AccountsList[AccNumTo].Transactions.Add(new TransactionsClass
+                {
+                    FromID = AccountNumber,
+                    ToID = AccNumTo,
+                    TransactionType = "Transfer",
+                    TransactionAmount = amount
+                });
+
+
+                Console.WriteLine("\nTransaction Succesful!");
+            }
+            else
             {
-                FromID = AccountNumber,
-                ToID = AccNumTo,
-                TransactionType = "Transfer",
-                TransactionAmount = amount
-            });
-
-
-            Console.WriteLine("Transaction Succesful!");
+                Console.WriteLine("\nInsert an appropriate account number or amount...");
+                CreateNewTransaction();
+            }
         }
 
 

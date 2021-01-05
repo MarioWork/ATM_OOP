@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\filip\\Desktop\\ATM\\ATM.csproj",
+      "projectUniqueName": "C:\\Users\\filip\\Documents\\GitHub\\ATM_OOP\\ATM\\ATM.csproj",
       "projectName": "ATM",
-      "projectPath": "C:\\Users\\filip\\Desktop\\ATM\\ATM.csproj",
+      "projectPath": "C:\\Users\\filip\\Documents\\GitHub\\ATM_OOP\\ATM\\ATM.csproj",
       "packagesPath": "C:\\Users\\filip\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\filip\\Desktop\\ATM\\obj\\",
+      "outputPath": "C:\\Users\\filip\\Documents\\GitHub\\ATM_OOP\\ATM\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\filip\\AppData\\Roaming\\NuGet\\NuGet.Config"
